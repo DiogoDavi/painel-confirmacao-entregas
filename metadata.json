@@ -1,0 +1,5 @@
+{
+  "name": "Confirmação de Recebimento",
+  "description": "Sistema para gestão e confirmação de recebimento de mercadorias com suporte a importação de planilhas.",
+  "requestFramePermissions": []
+}
