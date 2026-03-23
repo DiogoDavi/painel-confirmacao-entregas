@@ -23,7 +23,7 @@ import {
   Dialog
 } from "@/components/ui"
 import { Solicitacao, Produto, ItemSolicitacao } from "@/lib/types"
-import { Plus, Mail, FileSpreadsheet, ExternalLink, Upload, Trash2, Eye, Download, Copy, Loader2 } from "lucide-react"
+import { Plus, Mail, FileSpreadsheet, ExternalLink, Upload, Trash2, Eye, Download, Copy, Loader2, Share2 } from "lucide-react"
 import * as XLSX from "xlsx"
 import { supabase } from "@/lib/supabase"
 
@@ -321,6 +321,27 @@ export function AdminPanel() {
     })
   }, [])
 
+  const compartilharLink = useCallback(async (id: string, destinatario: string) => {
+    const url = `${window.location.origin}/confirmacao/${id}`
+    const shareData = {
+      title: 'Confirmação de Recebimento - SOLAR Coca-Cola',
+      text: `Olá ${destinatario}, por favor confirme o recebimento da mercadoria através deste link:`,
+      url: url,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback to copy if share is not supported
+        copiarLink(id);
+        alert("Compartilhamento não suportado neste navegador. O link foi copiado para a área de transferência.");
+      }
+    } catch (err) {
+      console.error('Erro ao compartilhar:', err);
+    }
+  }, [copiarLink])
+
   const colunasPadrao = new Set(["COD PRODUTO", "PRODUTO", "CATEGORIA", "QUANTIDADE CF", "DATA VENCIMENTO", "NUM_TRANSPORTE", "VALOR"])
 
   return (
@@ -525,6 +546,15 @@ export function AdminPanel() {
                               </Badge>
                             ) : null}
                             <Copy className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => compartilharLink(s.id, s.destinatario)}
+                            className="h-8 w-8 text-muted-foreground hover:text-primary transition-colors"
+                            title="Compartilhar Link"
+                          >
+                            <Share2 className="h-4 w-4" />
                           </Button>
                         </TableCell>
                         <TableCell>
